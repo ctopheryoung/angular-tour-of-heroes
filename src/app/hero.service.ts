@@ -30,6 +30,13 @@ export class HeroService {
       );
   }
 
+  addHero(hero: Hero): Observable<Hero> {
+    return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions).pipe(
+      tap((newHero: Hero) => this.log(`added her w/ id=${newHero.id}`)),
+      catchError(this.handleError<Hero>('addHero'))
+    )
+  }
+
   /** GET hero by id. Will 404 if id not found */
   getHero(id: number): Observable<Hero> {
     const url = `${this.heroesUrl}/${id}`;
@@ -45,6 +52,15 @@ export class HeroService {
     return this.http.put(this.heroesUrl, hero, this.httpOptions).pipe(
       tap(_ => this.log(`updated hero id=${hero.id}`)),
       catchError(this.handleError<any>('updateHero'))
+    );
+  }
+
+  deleteHero(id: number): Observable<Hero> {
+    const url = `$${this.heroesUrl}/${id}`;
+
+    return this.http.delete<Hero>(url, this.httpOptions).pipe(
+      tap(_ => this.log(`deleted heroo id=${id}`)),
+      catchError(this.handleError<Hero>('deleteHero'))
     );
   }
 
