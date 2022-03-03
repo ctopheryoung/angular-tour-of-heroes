@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, TemplateRef } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs';
 import { MessageService } from './message.service';
@@ -62,6 +62,20 @@ export class HeroService {
       tap(_ => this.log(`deleted heroo id=${id}`)),
       catchError(this.handleError<Hero>('deleteHero'))
     );
+  }
+
+  searchHeroes(term: string): Observable<Hero[]> {
+    if (!term.trim()) {
+      // if no search term, return empty hero array.
+      return of([]);
+    }
+
+    return this.http.get<Hero[]>(`${this.heroesUrl}/?name=${term}`).pipe(
+      tap(x => x.length ?
+        this.log(`found heroes mathing "${term}"`) :
+        this.log(`no heroes matching term "${term}"`)),
+      catchError(this.handleError<Hero[]>('searchHeroes', []))
+    )
   }
 
   /** Log a HeroService message with the MessageService */
